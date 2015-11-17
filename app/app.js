@@ -1,41 +1,10 @@
 import Dat from 'dat-gui';
-import Scene from './scene/scene';
+import Scene from './classes/Scene';
+import AudioAnalyzer from './classes/AudioAnalyzer';
 import { Graphics } from 'pixi.js';
 import NumberUtils from './utils/number-utils';
 
 let angle = 0;
-
-/**
- * SETUP Audio
- */
-var audioCtx = new AudioContext();
-var analyser = audioCtx.createAnalyser();
-var frequencyData = new Uint8Array(analyser.frequencyBinCount);
-var audioBuffer;
-var audioSource;
-function loadSound() {
-  var request = new XMLHttpRequest();
-  request.open('GET', '/sounds/woodkid-iron.mp3', true);
-  request.responseType = 'arraybuffer';
-  // Decode asynchronously
-  request.onload = function() {
-    audioCtx.decodeAudioData(request.response, function(buffer) {
-      // success callback
-      audioBuffer = buffer;
-      // Create sound from buffer
-      audioSource = audioCtx.createBufferSource();
-      audioSource.buffer = audioBuffer;
-      // connect the audio source to context's output
-      audioSource.connect( audioCtx.destination )
-      // play sound
-      audioSource.start();
-    }, function(){
-      // error callback
-    });
-  }
-  request.send();
-}
-
 
 class App {
 
@@ -52,15 +21,12 @@ class App {
     let root = document.body.querySelector('.app')
     root.appendChild( this.scene.renderer.view );
 
-    this.ball = new Graphics();
-    this.ball.beginFill( 0xFF0000 );
-    this.ball.drawCircle( 0, 0, 50 );
-    this.ball.y = window.innerHeight / 2;
-    this.scene.addChild( this.ball );
+    this.bars = new Graphics();
+    this.scene.addChild( this.bars );
+
+    this.myAudioAnalyzer = new AudioAnalyzer('/sounds/woodkid-iron.mp3');
 
     this.addListeners();
-
-    loadSound();
 
   }
 
@@ -83,9 +49,18 @@ class App {
     this.DELTA_TIME = Date.now() - this.LAST_TIME;
     this.LAST_TIME = Date.now();
 
-    angle += 0.05;
+    var frequencyData = this.myAudioAnalyzer.getFrequencyBars(10);
 
-    this.ball.x = ( window.innerWidth / 2 ) + Math.sin( angle ) * 100;
+    this.bars.clear();
+    var barWidth = this.width / frequencyData.length;
+
+    this.bars.beginFill(0xFF0000);
+
+    for (var i = 0; i < frequencyData.length; i++) {
+      var freq = frequencyData[i];
+      var height = NumberUtils.map(freq, 0, 255, 0, this.height);
+      this.bars.drawRect(i*barWidth, this.height - height, barWidth, height);
+    }
 
     this.scene.render();
 
