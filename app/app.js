@@ -3,7 +3,6 @@ import Scene from './scene/scene';
 import { Graphics } from 'pixi.js';
 import NumberUtils from './utils/number-utils';
 
-
 let angle = 0;
 
 class App {
