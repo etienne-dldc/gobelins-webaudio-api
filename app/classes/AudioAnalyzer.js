@@ -1,9 +1,11 @@
 export default class AudioAnalyzer {
 
-  constructor(soundUrl) {
-    this.audioCtx = new AudioContext();
-
+  constructor(soundUrl, loop) {
     this.soundUrl = soundUrl;
+    this.loop = false;
+    if (loop !== undefined) { this.loop = true; }
+
+    this.audioCtx = new AudioContext();
 
     this.analyser = this.audioCtx.createAnalyser();
     this.frequencyData = new Uint8Array(this.analyser.frequencyBinCount);
@@ -29,6 +31,7 @@ export default class AudioAnalyzer {
         // Create sound from buffer
         this.audioSource = this.audioCtx.createBufferSource();
         this.audioSource.buffer = this.audioBuffer;
+        this.audioSource.loop = this.loop;
         // connect the audio source to context's output
         this.audioSource.connect(this.analyser);
         this.analyser.connect(this.audioCtx.destination);
@@ -92,4 +95,9 @@ export default class AudioAnalyzer {
 
     return result;
   }
+
+  getT() {
+    return this.audioCtx.currentTime;
+  }
+
 };
