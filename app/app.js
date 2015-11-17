@@ -5,6 +5,38 @@ import NumberUtils from './utils/number-utils';
 
 let angle = 0;
 
+/**
+ * SETUP Audio
+ */
+var audioCtx = new AudioContext();
+var analyser = audioCtx.createAnalyser();
+var frequencyData = new Uint8Array(analyser.frequencyBinCount);
+var audioBuffer;
+var audioSource;
+function loadSound() {
+  var request = new XMLHttpRequest();
+  request.open('GET', '/sounds/woodkid-iron.mp3', true);
+  request.responseType = 'arraybuffer';
+  // Decode asynchronously
+  request.onload = function() {
+    audioCtx.decodeAudioData(request.response, function(buffer) {
+      // success callback
+      audioBuffer = buffer;
+      // Create sound from buffer
+      audioSource = audioCtx.createBufferSource();
+      audioSource.buffer = audioBuffer;
+      // connect the audio source to context's output
+      audioSource.connect( audioCtx.destination )
+      // play sound
+      audioSource.start();
+    }, function(){
+      // error callback
+    });
+  }
+  request.send();
+}
+
+
 class App {
 
   constructor() {
@@ -27,6 +59,8 @@ class App {
     this.scene.addChild( this.ball );
 
     this.addListeners();
+
+    loadSound();
 
   }
 
@@ -54,7 +88,6 @@ class App {
     this.ball.x = ( window.innerWidth / 2 ) + Math.sin( angle ) * 100;
 
     this.scene.render();
-
 
   }
 
