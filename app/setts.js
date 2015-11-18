@@ -1,12 +1,10 @@
 import Dat from 'dat-gui';
 
 var setts = {
-  nbrOfBars: 10,
-  barsMargin: 0.2
+  timeOffset: 0
 };
 
 var gui = new Dat.GUI();
-gui.add(setts, 'nbrOfBars', 1, 500);
-gui.add(setts, 'barsMargin', 0, 1);
+gui.add(setts, 'timeOffset', -2000, 2000);
 
 export default setts;

@@ -12,6 +12,7 @@
   "author": "William Mapan",
   "license": "ISC",
   "dependencies": {
+    "clone": "^1.0.2",
     "dat-gui": "^0.5.0",
     "howler": "^1.1.28",
     "pixi.js": "^3.0.8"
