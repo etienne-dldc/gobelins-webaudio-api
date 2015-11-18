@@ -4,6 +4,7 @@ export default class SoundExplorer {
     this.file = dataFile;
 
     this.data = {};
+    this.dataLoaded = false;
 
     this.loadFile();
   }
@@ -13,11 +14,12 @@ export default class SoundExplorer {
     request.open('GET', this.file, true);
     request.onload = () => {
       this.data = request.response;
+      this.dataLoaded = true;
     }
     request.send();
   }
 
-  
+
 
 
 
