@@ -11,6 +11,7 @@ export default class AudioAnalyzer {
     this.frequencyData = new Uint8Array(this.analyser.frequencyBinCount);
 
     this.soundLoaded = false;
+    this.playStart = null;
 
     this.audioBuffer;
     this.audioSource;
@@ -24,24 +25,34 @@ export default class AudioAnalyzer {
     request.responseType = 'arraybuffer';
 
     request.onload = () => {
-      this.soundLoaded = true;
       this.audioCtx.decodeAudioData(request.response, (buffer) => {
+        this.soundLoaded = true;
         // success callback
         this.audioBuffer = buffer;
         // Create sound from buffer
         this.audioSource = this.audioCtx.createBufferSource();
         this.audioSource.buffer = this.audioBuffer;
         this.audioSource.loop = this.loop;
+        this.audioSource.onended = () => {
+          this.playSound();
+        }
         // connect the audio source to context's output
         this.audioSource.connect(this.analyser);
         this.analyser.connect(this.audioCtx.destination);
-        // play sound
         this.audioSource.start();
+        this.playSound();
       }, function(){
         // error callback
       });
     }
     request.send();
+  }
+
+  playSound() {
+    if (this.soundLoaded) {
+      this.playStart = Date.now();
+      console.log('play : ' + this.playStart);
+    }
   }
 
   getFrequencyData() {

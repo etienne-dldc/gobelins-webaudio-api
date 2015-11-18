@@ -19,6 +19,10 @@ export default class SoundExplorer {
     request.send();
   }
 
+  atPos(pos) {
+    return true;
+  }
+
 
 
 
