@@ -16,6 +16,8 @@ const Tools = {
     return [parseInt(hex.substr(0,2), 16), parseInt(hex.substr(2,2), 16), parseInt(hex.substr(4,2), 16)];
   },
 
+
+  // [0 - 100]
   hsl2hex(h, s, l) {
     let c = color().hsl([h, s, l]);
     c = c.rgb();
@@ -28,6 +30,10 @@ const Tools = {
 
   random(min, max) {
     return min + (Math.random() * (max - min) );
+  },
+
+  randomInt(min, max) {
+    return Math.floor(Tools.random(min, max));
   },
 
   toRadians( degree ) {

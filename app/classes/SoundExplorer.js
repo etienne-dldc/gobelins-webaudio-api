@@ -106,6 +106,7 @@ export default class SoundExplorer {
       if (elem.start <= pos && (elem.start + elem.duration) > pos) {
         var newElem = clone(elem);
         newElem.time = pos - elem.start;
+        newElem.id = i;
         //result.push(newElem);
         result = newElem;
         break;
