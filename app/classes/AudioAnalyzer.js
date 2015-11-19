@@ -1,57 +1,66 @@
+import bufferLoader from 'webaudio-buffer-loader';
+
 export default class AudioAnalyzer {
 
-  constructor(soundUrl, loop) {
-    this.soundUrl = soundUrl;
+  constructor(options) {
+    this.soundUrl = options.url;
+
     this.loop = false;
-    if (loop !== undefined) { this.loop = true; }
+    if (options.loop !== undefined) { this.loop = options.loop; }
+
+    this.onend = function () {};
+    if (options.onend !== undefined) { this.onend = options.onend; }
 
     this.audioCtx = new AudioContext();
 
     this.analyser = this.audioCtx.createAnalyser();
     this.frequencyData = new Uint8Array(this.analyser.frequencyBinCount);
 
+    this.analyser.connect(this.audioCtx.destination);
+
     this.soundLoaded = false;
-    this.playStart = null;
+    this.startTime = null;
+    this.isPlaying = false;
+    this.nbrOfPlay = 0;
 
-    this.audioBuffer;
-    this.audioSource;
+    this.audioBuffer = null;
+    this.audioSource = null;
 
-    this.loadSound();
-  }
-
-  loadSound() {
-    let request = new XMLHttpRequest();
-    request.open('GET', this.soundUrl, true);
-    request.responseType = 'arraybuffer';
-
-    request.onload = () => {
-      this.audioCtx.decodeAudioData(request.response, (buffer) => {
-        this.soundLoaded = true;
-        // success callback
-        this.audioBuffer = buffer;
-        // Create sound from buffer
-        this.audioSource = this.audioCtx.createBufferSource();
-        this.audioSource.buffer = this.audioBuffer;
-        this.audioSource.loop = this.loop;
-        this.audioSource.onended = () => {
-          this.playSound();
-        }
-        // connect the audio source to context's output
-        this.audioSource.connect(this.analyser);
-        this.analyser.connect(this.audioCtx.destination);
-        this.audioSource.start();
-        this.playSound();
-      }, function(){
-        // error callback
-      });
-    }
-    request.send();
+    bufferLoader(this.soundUrl, this.audioCtx, (err, loadedBuffer) => {
+      this.soundLoaded = true;
+      this.soundBuffer = loadedBuffer;
+      this.playSound();
+    });
   }
 
   playSound() {
     if (this.soundLoaded) {
-      this.playStart = Date.now();
-      console.log('play : ' + this.playStart);
+      if (this.isPlaying) {
+        this.audioSource.stop();
+        this.isPlaying = false;
+      }
+      if (this.loop || this.nbrOfPlay < 1) {
+        this.audioSource = this.audioCtx.createBufferSource();
+        this.audioSource.buffer = this.soundBuffer;
+
+        this.audioSource.connect(this.analyser);
+        this.audioSource.onended = () => {
+          this.onend();
+          this.playSound();
+        }
+        this.audioSource.start(0);
+        this.isPlaying = true;
+        this.startTime = Date.now();
+        this.nbrOfPlay++;
+      }
+    }
+  }
+
+  pos(){
+    if (this.soundLoaded && this.isPlaying) {
+      return (Date.now() - this.startTime) / 1000;
+    } else {
+      return 0;
     }
   }
 
@@ -107,8 +116,17 @@ export default class AudioAnalyzer {
     return result;
   }
 
-  getT() {
-    return this.audioCtx.currentTime;
+  getAmplitude() {
+
+    let data = this.getFrequencyData();
+
+    let total = 0;
+    for (let i = 0; i < data.length; i++) {
+      total += data[i];
+    }
+
+    return total / data.length;
+
   }
 
 };
