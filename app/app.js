@@ -31,19 +31,7 @@ class App {
       y: this.height/2
     }
     this.fps = 1000/60;
-    this.customSyncCount = 0;
-
-    this.scene = new Scene();
-    this.scene.renderer.backgroundColor = 0x2c3e50;
-
-    const root = document.body.querySelector('.app')
-    root.appendChild( this.scene.renderer.view );
-
-    this.graph = new Graphics();
-    this.scene.addChild(this.graph);
-
-    this.am = new AnnimationManager(this.scene);
-
+    this.lastCustomSyncRender = 0; // Counter to trigger boom x time per second
     this.current = {
       segment: { id: null },
       beat: { id: null },
@@ -55,15 +43,23 @@ class App {
       amplitude: 0
     };
 
+    this.scene = new Scene();
+    this.scene.renderer.backgroundColor = 0x2c3e50;
+
+    const root = document.body.querySelector('.app')
+    root.appendChild( this.scene.renderer.view );
+
+    this.am = new AnnimationManager(this.scene); // To manage annimation ('booms')
+
+    // To control music
     this.music = new AudioAnalyzer({
       url: '/sounds/' + music + '.mp3',
       onend: this.onMusicEnd.bind(this),
       loop: true
     });
 
+    // To mange json file from EchoNest
     this.mySoundExplorer = new SoundExplorer('/sounds/' + music + '.json');
-
-    this.colorsList = [0x2ecc71, 0x3498db, 0x9b59b6, 0x34495e, 0x16a085, 0x27ae60, 0x2980b9, 0x8e44ad, 0xf1c40f, 0xe67e22, 0xe74c3c, 0xecf0f1, 0x95a5a6, 0xf39c12, 0xd35400, 0xc0392b, 0xbdc3c7, 0x7f8c8d];
 
     this.addListeners();
   }
@@ -102,9 +98,9 @@ class App {
     })
 
     if (setts.syncEvent == 'custom') {
-      this.customSyncCount++;
-      if (this.customSyncCount > setts.customSyncFrequency) {
-        this.customSyncCount = 0;
+      let timeDiff = Date.now() - this.lastCustomSyncRender;
+      if (timeDiff > 1000 / setts.customSyncFrequency) {
+        this.lastCustomSyncRender = Date.now();
         this.addBoom();
       }
     }

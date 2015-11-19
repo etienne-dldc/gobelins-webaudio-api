@@ -3,6 +3,11 @@ import { Graphics, Point } from 'pixi.js';
 import Tools from '../tools';
 import setts from '../setts';
 
+/**
+* Gestion des annimations
+* Pricipalement les "booms"
+**/
+
 class AnnimationManager {
 
   constructor(scene) {
@@ -25,19 +30,21 @@ class AnnimationManager {
     this.amContainer.y = this.center.y;
     this.scene.addChild(this.amContainer);
 
+    // Rotation du Graphics amContainer
     this.globalRotation = 0.1;
 
+    // Liste des éléments à supprimer
     this.removeList = [];
 
+    // Position du dernier boom pour les lignes
     this.lastBoomPos = {x: this.center.x, y: this.center.y};
-
-    //this.ampCircle();
 
   }
 
   update( timeUnit ) {
     this.updateGlobalRotation( timeUnit );
     this.updateBooms( timeUnit );
+    // Remove elems in this.removeList
     this.clean();
   }
 
@@ -59,6 +66,7 @@ class AnnimationManager {
     newBoom.maxSize = options.size;
     newBoom.rotation = options.rotation;
     newBoom.rotationEnd = options.rotationEnd;
+    // onComplete -> add to removeList
     let remove = (function remove(elem) {
       this.removeList.push({
         elem: elem,
@@ -76,7 +84,7 @@ class AnnimationManager {
         onComplete: remove, onCompleteParams:[newBoom]
       }
     );
-
+    // Create graphics
     newBoom.graph = new Graphics();
 
     this.amContainer.addChild( newBoom.graph );
@@ -84,6 +92,7 @@ class AnnimationManager {
   }
 
   getBoomOptions(pitche, duration) {
+    // If options for pitche does not exist -> create
     if (this.boomsOptions[pitche] === undefined) {
       const rotationMax = Math.PI/2;
       const rotation = Tools.random(0, Math.PI*2);
@@ -98,6 +107,7 @@ class AnnimationManager {
         duration: setts.shapeTTL
       }
     }
+    // rerturn options for pitche
     return this.boomsOptions[pitche];
   }
 
@@ -112,6 +122,7 @@ class AnnimationManager {
   updateBooms( timeUnit ) {
     for (var i = 0; i < this.booms.length; i++) {
       let boom = this.booms[i];
+      // Clear
       boom.graph.clear();
       // Line
       if (setts.displayLines) {
@@ -123,9 +134,9 @@ class AnnimationManager {
       // Shape
       boom.graph.beginFill( boom.color, boom.opacity );
       boom.graph.lineStyle(0, 0xffffff, 0);
-      if (boom.type <= 2) {
+      if (boom.type <= 2) { // Circle
         boom.graph.drawCircle(boom.x, boom.y, boom.size);
-      } else {
+      } else { // Polygon
           let points = [];
           let angle = boom.rotation;
           for (var j = 0; j < boom.type; j++) {
@@ -142,6 +153,7 @@ class AnnimationManager {
 
 
   clean() {
+    // Remove elems in removeList
     for (var i = 0; i < this.removeList.length; i++) {
       let removeElem = this.removeList[i];
       let result = this.amContainer.removeChild(removeElem.elem.graph);

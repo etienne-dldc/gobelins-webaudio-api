@@ -12,7 +12,7 @@ var setts = {
   displayLines: true,
   lineWidth: 3,
   syncEvent: 'custom',
-  customSyncFrequency: 3,
+  customSyncFrequency: 30,
   globalRotation: 0.5 // deg / ms
 };
 
@@ -24,7 +24,7 @@ gui.add(setts, 'shapeTTL', 0.1, 10);
 gui.add(setts, 'displayLines');
 gui.add(setts, 'lineWidth', 0.5, 10);
 gui.add(setts, 'syncEvent', ['tatum', 'beat', 'segment','custom']);
-gui.add(setts, 'customSyncFrequency', 1, 10);
+gui.add(setts, 'customSyncFrequency', 1, 60);
 gui.add(setts, 'globalRotation', -1, 1);
 
 export default setts;
