@@ -54,9 +54,10 @@ class AnnimationManager {
 
   boom(options) {
     let newBoom = {};
-    newBoom.color = options.color;
+    let hue = Tools.map(options.type + Math.random(), 2, 14, 0, 360);
+    newBoom.color = options.color || Tools.hsl2hex( hue, 100, 60);
     newBoom.startTime = Date.now();
-    newBoom.duration = options.duration;
+    newBoom.duration = options.duration;//Math.floor(options.duration * setts.shapeTTL * 10) / 10;
     newBoom.opacity = options.opacity || setts.shapeOpacity;
     newBoom.type = options.type;
     newBoom.x = (options.dist * Math.cos(options.angle));
@@ -77,7 +78,7 @@ class AnnimationManager {
     // TweenMax
     newBoom.tween = TweenMax.to(
       newBoom,
-      options.duration,
+      newBoom.duration,
       {
         opacity:0,
         size: options.size,
@@ -92,20 +93,34 @@ class AnnimationManager {
     this.booms.push( newBoom );
   }
 
-  getBoomOptions(pitche, duration) {
+  getBoomOptions(pitche, duration, pitcheDetails) {
     // If options for pitche does not exist -> create
     if (this.boomsOptions[pitche] === undefined) {
+      // Find angle
+        let pitchesArr = [];
+        for (var i = 0; i < pitcheDetails.length; i++) {
+          pitchesArr.push({
+            value: pitcheDetails[i],
+            index: i
+          });
+        }
+        pitchesArr.sort( (left, right) => { return (right.value - left.value) } );
+        let angle = 0;
+        for (var i = 0; i < 4; i++) {
+          let anglePart = (Math.PI * 2) * Math.pow(1/12, i);
+          angle += pitchesArr[i].index * anglePart;
+        }
       const rotationMax = Math.PI/2;
       const rotation = Tools.random(0, Math.PI*2);
       this.boomsOptions[pitche] = {
         size: 10,
-        angle: Math.random() * 2 * Math.PI,
+        angle: angle,
         dist: 100,
         type: 0,
-        color: Tools.hsl2hex(Tools.randomInt(0, 360), 100, 60),
+        color: false,
         rotation: rotation,
         rotationEnd: rotation + (rotationMax/2) - (Math.random() * rotationMax),
-        duration: duration * 2 //setts.shapeTTL
+        duration: duration * 2
       }
     }
     // rerturn options for pitche

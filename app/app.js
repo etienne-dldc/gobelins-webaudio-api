@@ -13,8 +13,8 @@ class App {
   constructor() {
 
     //const music = 'woodkid-iron';
-    //const music = 'woodkid-run-boy-run';
-    const music = 'awolnation-sail';
+    const music = 'woodkid-run-boy-run';
+    //const music = 'awolnation-sail';
     //const music = 'hello';
 
     this.DELTA_TIME = 0;
@@ -90,7 +90,7 @@ class App {
       if (pitche !== this.current.pitche) {
         this.current.pitche = pitche;
       }
-      let timbre = this.findElemAuto(elem.timbre);
+      let timbre = this.findElemMax(elem.timbre);
       if (timbre !== this.current.timbre) {
         this.current.timbre = timbre;
       }
@@ -178,9 +178,9 @@ class App {
    */
   addBoom() {
     let cu = this.current;
-    let options = this.am.getBoomOptions(cu.pitche, cu.segment.duration);
+    let options = this.am.getBoomOptions(cu.pitche, cu.segment.duration, cu.segment.pitches);
     options.dist = Tools.map(cu.amplitude, 0, setts.amplitudeMap, 0, this.diagonal/2);
-    options.type = cu.timbre.length;
+    options.type = cu.timbre + 2;
     options.size = Math.pow( Tools.map(cu.segment.loudness_max, -60, 0, 1, 1.8), 10);
     this.am.boom(options);
   }
@@ -247,6 +247,19 @@ class App {
       }
     }
     return result.join('');
+  }
+
+  /**
+  * Retourne l'index de la valeur max de @list
+  */
+  findElemMax(list) {
+    let max = 0;
+    for (var i = 0; i < list.length; i++) {
+      if (list[i] > list[max]) {
+        max = i;
+      }
+    }
+    return max;
   }
 
   /**
