@@ -26,7 +26,17 @@ export default class AudioAnalyzer {
     this.audioBuffer = null;
     this.audioSource = null;
 
-    bufferLoader(this.soundUrl, this.audioCtx, (err, loadedBuffer) => {
+    this.loadMusic(this.soundUrl);
+  }
+
+  loadMusic(url) {
+    if (this.soundLoaded) {
+      if (this.isPlaying) {
+        this.audioSource.stop();
+        this.isPlaying = false;
+      }
+    }
+    bufferLoader(url, this.audioCtx, (err, loadedBuffer) => {
       this.soundLoaded = true;
       this.soundBuffer = loadedBuffer;
       this.playSound();
@@ -45,8 +55,11 @@ export default class AudioAnalyzer {
 
         this.audioSource.connect(this.analyser);
         this.audioSource.onended = () => {
+          this.audioSource.onended = () => {};
           this.onend();
-          this.playSound();
+          if (this.soundLoaded) {
+            this.playSound();
+          }
         }
         this.audioSource.start(0);
         this.isPlaying = true;
@@ -126,7 +139,6 @@ export default class AudioAnalyzer {
     }
 
     return total / data.length;
-
   }
 
 };

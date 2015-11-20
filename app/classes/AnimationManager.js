@@ -4,11 +4,11 @@ import Tools from '../tools';
 import setts from '../setts';
 
 /**
-* Gestion des annimations
+* Gestion des animations
 * Pricipalement les "booms"
 **/
 
-class AnnimationManager {
+class AnimationManager {
 
   constructor(scene) {
     this.scene = scene;
@@ -190,4 +190,4 @@ class AnnimationManager {
 
 }
 
-export default AnnimationManager;
+export default AnimationManager;

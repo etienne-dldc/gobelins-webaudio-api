@@ -5,6 +5,7 @@ import Dat from 'dat-gui';
 **/
 
 var setts = {
+  music: 'woodkid-run-boy-run',
   timeOffset: 0,
   amplitudeMap: 200,
   shapeOpacity: 0.5,
@@ -56,7 +57,8 @@ let saveData = {
   "folders": {}
 }
 
-var gui = new Dat.GUI({ load: saveData });
+let gui = new Dat.GUI({ load: saveData });
+gui.add(setts, 'music', ['woodkid-iron', 'woodkid-run-boy-run', 'awolnation-sail', 'hello', 'hanszimmer-interstellar', 'beethoven-lettre-a-elise']);
 gui.add(setts, 'timeOffset', -2000, 2000);
 gui.add(setts, 'amplitudeMap', 1, 255);
 gui.add(setts, 'shapeOpacity', 0, 1);

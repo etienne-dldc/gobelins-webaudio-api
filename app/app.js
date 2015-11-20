@@ -4,7 +4,7 @@ import setts from './setts';
 import Scene from './classes/Scene';
 import AudioAnalyzer from './classes/AudioAnalyzer';
 import SoundExplorer from './classes/SoundExplorer';
-import AnnimationManager from './classes/AnnimationManager';
+import AnimationManager from './classes/AnimationManager';
 import Tools from './tools';
 import clone from 'clone';
 
@@ -46,7 +46,9 @@ class App {
     const root = document.body.querySelector('.app')
     root.appendChild( this.scene.renderer.view );
 
-    this.am = new AnnimationManager(this.scene); // To manage annimation ('booms')
+    this.am = new AnimationManager(this.scene); // To manage animation ('booms')
+
+    this.currentMusic = setts.music;
 
     // To control music
     this.music = new AudioAnalyzer({
@@ -67,6 +69,13 @@ class App {
   }
 
   update() {
+
+    if (setts.music !== this.currentMusic) {
+      this.currentMusic = setts.music;
+      this.changeMusic(setts.music);
+      return;
+    }
+
     this.DELTA_TIME = Date.now() - this.LAST_TIME;
     this.LAST_TIME = Date.now();
 
@@ -151,7 +160,7 @@ class App {
       this.am.setGlobalRotation( setts.globalRotation );
     }
 
-    // Update the AnnimationManager
+    // Update the AnimationManager
     this.am.update( timeUnit );
 
     this.scene.render();
@@ -174,7 +183,7 @@ class App {
 
   /**
    * Recupere les options liées au pitche (si elles n'existe pas elle sont crées)
-   * et ajoute un élément 'boom' à l'AnnimationManager
+   * et ajoute un élément 'boom' à l'AnimationManager
    */
   addBoom() {
     let cu = this.current;
@@ -291,6 +300,15 @@ class App {
     this.width = window.innerWidth;
     this.height = window.innerHeight;
     this.scene.resize( this.width, this.height );
+  }
+
+  changeMusic(music) {
+
+    // To control music
+    this.music.loadMusic('/sounds/' + music + '.mp3');
+
+    // To mange json file from EchoNest
+    this.mySoundExplorer = new SoundExplorer('/sounds/' + music + '.json');
   }
 
 
