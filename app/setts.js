@@ -26,7 +26,7 @@ let saveData = {
       "0": {
         "timeOffset": 0,
         "amplitudeMap": 200,
-        "shapeOpacity": 0.5,
+        "shapeOpacity": 1,
         "shapeTTL": 2,
         "pitcheFilter": 0.5,
         "displayLines": true,
