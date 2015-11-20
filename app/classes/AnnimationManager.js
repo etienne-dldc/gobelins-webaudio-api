@@ -37,7 +37,7 @@ class AnnimationManager {
     this.removeList = [];
 
     // Position du dernier boom pour les lignes
-    this.lastBoomPos = {x: this.center.x, y: this.center.y};
+    this.lastBoomPos = {x: 0, y: 0};
 
   }
 
@@ -57,11 +57,12 @@ class AnnimationManager {
     newBoom.color = options.color;
     newBoom.startTime = Date.now();
     newBoom.duration = options.duration;
-    newBoom.opacity = setts.shapeOpacity;
+    newBoom.opacity = options.opacity || setts.shapeOpacity;
     newBoom.type = options.type;
     newBoom.x = (options.dist * Math.cos(options.angle));
     newBoom.y = (options.dist * Math.sin(options.angle));
     newBoom.size = 1;
+    newBoom.lines = (options.lines == undefined) ? true : options.lines;
     newBoom.lineWidth = 2; //Tools.map(options.duration, 2, 0, 0.5, 10);
     newBoom.maxSize = options.size;
     newBoom.rotation = options.rotation;
@@ -104,7 +105,7 @@ class AnnimationManager {
         color: Tools.hsl2hex(Tools.randomInt(0, 360), 100, 60),
         rotation: rotation,
         rotationEnd: rotation + (rotationMax/2) - (Math.random() * rotationMax),
-        duration: setts.shapeTTL
+        duration: duration * 2 //setts.shapeTTL
       }
     }
     // rerturn options for pitche
@@ -125,11 +126,19 @@ class AnnimationManager {
       // Clear
       boom.graph.clear();
       // Line
-      if (setts.displayLines) {
-        boom.graph.lineStyle(boom.lineWidth * setts.lineWidth, boom.color, boom.opacity);
-        boom.graph.moveTo(this.lastBoomPos.x, this.lastBoomPos.y);
-        this.lastBoomPos = { x: boom.x, y: boom.y };
-        boom.graph.lineTo(boom.x, boom.y);
+      if (boom.lines) {
+        if (setts.displayLines) {
+          boom.graph.lineStyle(boom.lineWidth * setts.lineWidth, boom.color, boom.opacity);
+          boom.graph.moveTo(this.lastBoomPos.x, this.lastBoomPos.y);
+          this.lastBoomPos = { x: boom.x, y: boom.y };
+          boom.graph.lineTo(boom.x, boom.y);
+        }
+        // Line from center
+        if (setts.displayLinesFromCenter) {
+          boom.graph.lineStyle(boom.lineWidth * setts.lineWidth, boom.color, boom.opacity);
+          boom.graph.moveTo(0, 0);
+          boom.graph.lineTo(boom.x, boom.y);
+        }
       }
       // Shape
       boom.graph.beginFill( boom.color, boom.opacity );

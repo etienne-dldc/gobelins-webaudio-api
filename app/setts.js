@@ -9,9 +9,11 @@ var setts = {
   amplitudeMap: 200,
   shapeOpacity: 0.5,
   shapeTTL: 2,
+  pitcheFilter: 0.5,
   displayLines: true,
-  lineWidth: 3,
-  syncEvent: 'custom',
+  displayLinesFromCenter: true,
+  lineWidth: 0.8,
+  syncEvent: 'segment',
   customSyncFrequency: 30,
   globalRotation: 0.5 // deg / ms
 };
@@ -21,9 +23,11 @@ gui.add(setts, 'timeOffset', -2000, 2000);
 gui.add(setts, 'amplitudeMap', 1, 255);
 gui.add(setts, 'shapeOpacity', 0, 1);
 gui.add(setts, 'shapeTTL', 0.1, 10);
+gui.add(setts, 'pitcheFilter', 0, 0.9);
 gui.add(setts, 'displayLines');
+gui.add(setts, 'displayLinesFromCenter');
 gui.add(setts, 'lineWidth', 0.5, 10);
-gui.add(setts, 'syncEvent', ['tatum', 'beat', 'segment','custom']);
+gui.add(setts, 'syncEvent', ['tatum', 'beat', 'segment', 'bar','custom']);
 gui.add(setts, 'customSyncFrequency', 1, 60);
 gui.add(setts, 'globalRotation', -1, 1);
 
