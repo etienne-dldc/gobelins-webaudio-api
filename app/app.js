@@ -52,13 +52,13 @@ class App {
 
     // To control music
     this.music = new AudioAnalyzer({
-      url: '/sounds/' + music + '.mp3',
+      url: 'sounds/' + music + '.mp3',
       onend: this.onMusicEnd.bind(this),
       loop: true
     });
 
     // To mange json file from EchoNest
-    this.mySoundExplorer = new SoundExplorer('/sounds/' + music + '.json');
+    this.mySoundExplorer = new SoundExplorer('sounds/' + music + '.json');
 
     this.addListeners();
   }
@@ -305,10 +305,10 @@ class App {
   changeMusic(music) {
 
     // To control music
-    this.music.loadMusic('/sounds/' + music + '.mp3');
+    this.music.loadMusic('sounds/' + music + '.mp3');
 
     // To mange json file from EchoNest
-    this.mySoundExplorer = new SoundExplorer('/sounds/' + music + '.json');
+    this.mySoundExplorer = new SoundExplorer('sounds/' + music + '.json');
   }
 
 
